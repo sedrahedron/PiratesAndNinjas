@@ -1,5 +1,37 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
+
+struct Player { // struct representing a pirate/ninja
+  int type; // 0 = pirate, 1 = ninja
+  pthread_t* data; // corresponding thread
+};
+
+struct QNode {
+  struct Player* p;
+  struct QNode* next; // pointer to next queue element
+};
+
+struct QNode* createNode (struct Player* p) {
+  struct QNode* temp = (struct Qnode*) malloc(sizeof(struct QNode));
+  temp->p = p;
+  temp->next = NULL;
+}
+
+struct Queue {
+  struct QNode* front; // pointers to front and back of Queue
+  struct QNode* back;
+};
+
+struct Queue* createQueue() {
+  struct Queue* q = (struct Queue*) malloc(sizeof(struct Queue));
+  q->back = q->front = NULL;
+  return q;
+}
+
+void add(struct Queue* q, struct Player* p) {
+  
+}
 
 // simple function that returns true if a given int is in a range, false otherwise
 int inRange(int num, int min, int max) {
@@ -22,3 +54,5 @@ int main (int argc, char** argv) {
 }
 
 // waiting-room style mutex
+// use structs to hold threads
+// thread aquires the lock, gets in the queue, then the lock is released
