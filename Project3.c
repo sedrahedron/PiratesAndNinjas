@@ -17,8 +17,14 @@
 //   int costumeTeam; // the team the thread is using
 // };
 
- myarg_t * pargs;
- myarg_t * nargs;
+struct threadStats { // struct holding stats for threads
+
+};
+
+struct threadStats* pirateStats;
+struct threadStats* ninjaStats;
+
+
 
 struct QNode {
   struct Player* p;
@@ -59,20 +65,20 @@ int inRange(int num, int min, int max) {
   return num >= min && num <= max;
 }
 
-
-
-
 typedef struct {
   int avgchangetime;
   int arrivetime;
-  char pirateorninja;
+  int pirateorninja;//0 if ninja, 1 if pirate
   }myarg_t;
+
 typedef struct {
   int visitnum;
   int waittime;
   double cost;
   }  myret_t;
 
+  struct myarg_t * pargs;
+  struct myarg_t * nargs;
 //takes in a thread and prints the statistics
 void changingroom(pthread_t thread){
  // sleep(); //average changing time for thread goes into sleep
@@ -83,11 +89,6 @@ void changingroom(pthread_t thread){
 
 
 void *mythread(void * arg){
-  myarg_t * args;
-  pargs.avgchangetime = avgpirate;
-  pargs.arrivetime = gettimeofday();
-
-
 
 }
 
@@ -121,19 +122,28 @@ int main (int argc, char** argv) {
     ninjaArrvl = strtod(argv[7], NULL);
     myret_t *pvals;
     myret_t *nvals;
+    struct queue pqueue;
 
     int i;
     int j;
     int n=0;
     pthread_t piratearr[pirates];
     pthread_t ninjaarr[ninjas];
+    pargs = (struct myarg_t*) malloc(sizeof(struct myarg_t) * pirates);
+    nargs = (struct myarg_t*) malloc(sizeof(struct myarg_t) * ninjas);
+
+    pirateStats = (struct threadStats*) malloc(sizeof(struct threadStats * pirates));
+    ninjaStats = (struct threadStats*) malloc(sizeof(struct threadStats * ninjas));
     //pthread_t *piratevals = malloc(sizeof(pthread_t)*pirates);
 
     for(i=0;i<pirates;i++){
-     //n+=avgPirate;
-      //piratearr[i];
-      pthread_create(&piratearr[i], NULL, mythread , &pargs);
-      pthread_join(piratearr[i],(void**)&pvals);
+      piratearr[i];
+      pargs[i].avgchangetime=avgPirate;
+      pargs[i].arrivetime=pirateArrvl;
+      pargs[i].pirateorninja=1;
+      lock_t mutex;
+      lock(&mutex);
+      add
     }
     for(j=0;j<ninjas;j++){
 
