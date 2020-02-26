@@ -4,34 +4,14 @@
 #include <math.h>
 #include <time.h>
 
-
-
 #define M_PI 3.141592653588979323846
 
-//using namespace std;
-
-// struct Player { // struct representing a pirate/ninja
-//   int type; // 0 = pirate, 1 = ninja
-//   pthread_t* data; // corresponding thread
-//   double costumingTime; // the time spent in the costuming department
-//   int costumeTeam; // the team the thread is using
-// };
-
-struct threadStats { // struct holding stats for threads
-
-};
-
-struct threadStats* pirateStats;
-struct threadStats* ninjaStats;
-
-
-
 struct QNode {
-  struct Player* p;
+  pthread_t* p;
   struct QNode* next; // pointer to next queue element
 };
 
-struct QNode* createNode (struct Player* p) {
+struct QNode* createNode (pthread_t* p) {
   struct QNode* temp = (struct Qnode*) malloc(sizeof(struct QNode));
   temp->p = p;
   temp->next = NULL;
@@ -49,10 +29,10 @@ struct Queue* createQueue() {
 }
 
 // lock will be needed in this function
-void add(struct Queue* q, struct Player* p) {
+void add(struct Queue* q, pthread_t* p) {
   struct QNode* temp = createNode(p);
   if (q->front == NULL) { // if the queue is empty
-    q->front = q->back = NULL;
+    q->front = q->back = temp;
     return;
   }
   q->back->next = temp;
@@ -60,43 +40,69 @@ void add(struct Queue* q, struct Player* p) {
   free(temp);
 }
 
+pthread_t pop(struct Queue* q) { // fix this later
+  if(q->front == NULL) return NULL;
+  struct QNode* front = q->front;
+  pthread_t* p = front->p;
+  q->front = front->next;
+  if (q->front == NULL) q->back = NULL;
+  free(front);
+  return p;
+}
+
 // simple function that returns true if a given int is in a range, false otherwise
 int inRange(int num, int min, int max) {
   return num >= min && num <= max;
 }
 
-typedef struct {
+ struct myarg_t {
   int avgchangetime;
-  int arrivetime;
+  int arrivetime;//time spent organizing before it changes
+  int waittime;//time spent waiting in queue
   int pirateorninja;//0 if ninja, 1 if pirate
-  }myarg_t;
+  };
 
-typedef struct {
+ struct myret_t {
   int visitnum;
-  int waittime;
+  int* waitarr;
   double cost;
   }  myret_t;
 
   struct myarg_t * pargs;
   struct myarg_t * nargs;
-//takes in a thread and prints the statistics
-void changingroom(pthread_t thread){
- // sleep(); //average changing time for thread goes into sleep
 
 
+  //gets the random number using the distribution
+  double randomdistribution(int n){
+  double a = drand48();
+  double b = drand48();
+  //double z= sqrt(-2 * log(a)) * cos(2 * M_PI * b);
+  double num = (double)n + z;
+  return fabs(num);
+  }
+
+
+//takes in the args and the ret and prints the statistics
+void changingroom(struct myarg_t arg, struct myret_t ret){
+double changetime;
+changetime = randomdistribution(arg.avgchangetime);
+sleep(changetime); //average changing time for thread goes into sleep
+ret.cost=(int) changetime;//sets the amount of time spent changing to goldowed
+ret.visitnum++;
 }
-
-
 
 void *mythread(void * arg){
 
 }
 
+struct myret_t* pirateStats;
+struct myret_t* ninjaStats;
+
 int main (int argc, char** argv) {
 
-    double a = drand48();
-    double b = drand48();
-    double z= sqrt(-2 * log(a)) * cos(2 * M_PI * b);
+    //double a = drand48();
+    //double b = drand48();
+    //double z= sqrt(-2 * log(a)) * cos(2 * M_PI * b);
 
   if (argc != 8) {
     printf("Error: seven arguments are required\n");
@@ -116,10 +122,28 @@ int main (int argc, char** argv) {
        printf("Error: The number of ninjas must be between 10 and 50\n");
        return 1;
     }
-    avgPirate = strtod(argv[4]+z, NULL);
-    avgNinja = strtod(argv[5]+z, NULL);
+    avgPirate = strtod(argv[4], NULL);
+    avgNinja = strtod(argv[5], NULL);
     pirateArrvl = strtod(argv[6], NULL);
     ninjaArrvl = strtod(argv[7], NULL);
+
+    struct Queue* pirateQueue = createQueue();
+    struct Queue* ninjaQueue = createQueue();
+
+    pirateStats = (struct myret_t*) malloc (sizeof(struct myret_t) * pirates);
+    ninjaStats = (struct myret_t*) malloc (sizeof(struct myret_t) * ninjas);
+
+    for (int i = 0; i < pirates; i++) {
+      pthread_t thread;
+      add(pirateQueue, &thread);
+    }
+
+    for (int i = 0; i < ninjas; i++) {
+      pthread_t thread;
+      add(ninjaQueue, &thread);
+    }
+
+    /*
     myret_t *pvals;
     myret_t *nvals;
     struct queue pqueue;
@@ -152,6 +176,7 @@ int main (int argc, char** argv) {
       pthread_join(ninjaarr[i], (void**)&nvals);
 
     }
+    */
 }
 
 // waiting-room style mutex
